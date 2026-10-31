@@ -70,6 +70,24 @@ footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
    <button class="action" id="makePlan">Créer mon plan de contenu</button>
    <div class="output" id="socialOutput">Le plan de contenu apparaîtra ici.</div>
    <p class="small">Les heures proposées seront des hypothèses tant que vous n'aurez pas fourni vos statistiques d'audience. Aucune publication ne sera envoyée sans connexion officielle et votre approbation.</p>
+   <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+   <h3>📈 Analyse des performances du compte</h3>
+   <p class="small">Saisis les statistiques d'une publication ou d'une période. L'analyse se fait dans ton navigateur. Aucun mot de passe n'est demandé.</p>
+   <div class="row">
+    <div><label for="aFollowers">Nombre d'abonnés</label><input id="aFollowers" type="number" min="0" placeholder="Ex. 2500"></div>
+    <div><label for="aViews">Vues / portée</label><input id="aViews" type="number" min="0" placeholder="Ex. 12000"></div>
+    <div><label for="aLikes">J'aime</label><input id="aLikes" type="number" min="0" placeholder="Ex. 850"></div>
+    <div><label for="aComments">Commentaires</label><input id="aComments" type="number" min="0" placeholder="Ex. 45"></div>
+    <div><label for="aShares">Partages</label><input id="aShares" type="number" min="0" placeholder="Ex. 110"></div>
+    <div><label for="aSaves">Enregistrements</label><input id="aSaves" type="number" min="0" placeholder="Ex. 70"></div>
+   </div>
+   <div class="row">
+    <div><label for="aFollows">Nouveaux abonnés obtenus</label><input id="aFollows" type="number" min="0" placeholder="Ex. 35"></div>
+    <div><label for="aPosts">Nombre de publications analysées</label><input id="aPosts" type="number" min="1" value="1"></div>
+   </div>
+   <button class="action" id="analyzeStats">Analyser mes statistiques</button>
+   <button class="action secondary" id="clearStats" type="button">Effacer</button>
+   <div class="output" id="analyticsOutput">Les indicateurs et recommandations apparaîtront ici.</div>
   </div>
   <div id="qualityForm" class="hidden">
    <label for="reviewText">Collez le travail d'un autre agent à vérifier</label><textarea id="reviewText" placeholder="Collez ici l'analyse, le budget, la recherche ou le contenu à contrôler..."></textarea>
@@ -113,6 +131,26 @@ document.getElementById("runGeneric").addEventListener("click",()=>{
  ideas:"IDÉES — Demande : "+t+"\n\nComparer les pistes selon : demande réelle; budget; compétences; difficulté; marge possible; concurrence; risque; test peu coûteux. Ne pas promettre de bénéfice garanti."
  };
  document.getElementById("genericOutput").textContent=prompts[current]||prompts.manager;
+});
+document.getElementById("analyzeStats").addEventListener("click",()=>{
+ const val=id=>Math.max(0,Number(document.getElementById(id).value)||0);
+ const views=val("aViews"),likes=val("aLikes"),comments=val("aComments"),shares=val("aShares"),saves=val("aSaves"),newFollows=val("aFollows"),posts=Math.max(1,val("aPosts"));
+ if(views===0){alert("Ajoute au moins le nombre de vues ou la portée.");return;}
+ const interactions=likes+comments+shares+saves,engagement=interactions/views*100,shareRate=shares/views*100,followRate=newFollows/views*100,avgViews=views/posts;
+ const verdict=engagement>=8?"Engagement élevé sur cet échantillon.":engagement>=3?"Engagement intermédiaire : teste plusieurs formats.":"Engagement à améliorer : travaille l'accroche et l'intérêt du contenu.";
+ const tips=[];
+ if(shareRate<0.5)tips.push("Partages faibles : crée un contenu utile ou facile à transmettre.");
+ if(comments<Math.max(1,views*0.001))tips.push("Peu de commentaires : termine par une question précise.");
+ if(saves<Math.max(1,views*0.002))tips.push("Peu d'enregistrements : teste des conseils ou listes utiles.");
+ if(followRate<0.3)tips.push("Peu de nouveaux abonnés : explique pourquoi suivre le compte.");
+ if(!tips.length)tips.push("Continue à tester les formats qui fonctionnent et compare plusieurs publications.");
+ const fmt=n=>n.toLocaleString("fr-FR",{maximumFractionDigits:2});
+ document.getElementById("analyticsOutput").textContent="RAPPORT D'ANALYSE SOCIAL MEDIA\n\nVues / portée : "+fmt(views)+"\nInteractions totales : "+fmt(interactions)+"\nTaux d'engagement par vue : "+fmt(engagement)+" %\nTaux de partage : "+fmt(shareRate)+" %\nNouveaux abonnés par vue : "+fmt(followRate)+" %\nVues moyennes par publication : "+fmt(avgViews)+"\n\nLECTURE : "+verdict+"\n\nRECOMMANDATIONS :\n"+tips.map((x,i)=>(i+1)+". "+x).join("\n")+"\n\nIndicateurs simples calculés avec les données saisies. Compare des publications de même format et de périodes similaires.";
+});
+document.getElementById("clearStats").addEventListener("click",()=>{
+ ["aFollowers","aViews","aLikes","aComments","aShares","aSaves","aFollows"].forEach(id=>document.getElementById(id).value="");
+ document.getElementById("aPosts").value="1";
+ document.getElementById("analyticsOutput").textContent="Les indicateurs et recommandations apparaîtront ici.";
 });
 document.getElementById("makePlan").addEventListener("click",()=>{
  const p=document.getElementById("platform").value,g=document.getElementById("goal").value,f=document.getElementById("frequency").value,n=document.getElementById("niche").value.trim()||"votre thème",s=document.getElementById("stats").value.trim();
