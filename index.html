@@ -56,6 +56,17 @@ footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
    </div>
    <label for="niche">Sujet de votre compte / public visé</label><input id="niche" placeholder="Ex. football, beauté, cuisine, technologie...">
    <label for="stats">Statistiques (facultatif : vues, likes, commentaires, heures actives)</label><textarea id="stats" placeholder="Ex. vidéo A : 1200 vues, 90 likes. Mon audience est surtout active le soir..."></textarea>
+   <div class="row">
+    <div><label for="brand">Nom de la marque / du compte</label><input id="brand" placeholder="Ex. Kafe Lakay"></div>
+    <div><label for="format">Format à préparer</label><select id="format"><option>Vidéo courte</option><option>Publication photo</option><option>Carrousel</option><option>Story</option><option>Vidéo YouTube</option></select></div>
+   </div>
+   <label for="topic">Sujet précis de la prochaine publication</label><input id="topic" placeholder="Ex. 3 astuces pour choisir un bon café">
+   <label for="voice">Ton de communication</label><select id="voice"><option>Amical et naturel</option><option>Professionnel</option><option>Énergique et motivant</option><option>Éducatif</option><option>Humoristique et respectueux</option></select>
+   <button class="action" id="makeContent">Préparer contenu + hashtags</button>
+   <div class="output" id="contentOutput">Le contenu et les hashtags proposés apparaîtront ici.</div>
+   <div class="notice" style="margin-top:14px"><b>Centre de gestion :</b> avant publication, vérifiez la légende, les droits sur la vidéo/photo, les hashtags, le lien et la date. Gardez la publication en brouillon jusqu'à votre approbation.</div>
+   <label>Contrôle avant publication</label>
+   <p class="small">☐ Contenu vérifié • ☐ Légende relue • ☐ Hashtags pertinents • ☐ Aucun renseignement privé • ☐ Publication approuvée</p>
    <button class="action" id="makePlan">Créer mon plan de contenu</button>
    <div class="output" id="socialOutput">Le plan de contenu apparaîtra ici.</div>
    <p class="small">Les heures proposées seront des hypothèses tant que vous n'aurez pas fourni vos statistiques d'audience. Aucune publication ne sera envoyée sans connexion officielle et votre approbation.</p>
@@ -112,6 +123,20 @@ document.getElementById("makePlan").addEventListener("click",()=>{
  if(s)out+="\n\nSTATISTIQUES FOURNIES :\n"+s+"\n\nÀ analyser : repérer les formats et créneaux qui obtiennent les meilleurs résultats, en tenant compte du nombre de publications et de la taille de l'audience.";
  out+="\n\nPROCHAINE ÉTAPE : créez 3 contenus, faites-les approuver, publiez-les manuellement, puis revenez avec les statistiques pour améliorer le plan.";
  document.getElementById("socialOutput").textContent=out;
+});
+document.getElementById("makeContent").addEventListener("click",()=>{
+ const platform=document.getElementById("platform").value;
+ const niche=document.getElementById("niche").value.trim()||"votre sujet";
+ const brand=document.getElementById("brand").value.trim()||"votre marque";
+ const topic=document.getElementById("topic").value.trim();
+ const format=document.getElementById("format").value;
+ const voice=document.getElementById("voice").value;
+ if(!topic){alert("Ajoutez le sujet précis de la publication.");return;}
+ const clean=niche.toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu,"");
+ const topicTag=topic.toLowerCase().split(/\\s+/).filter(Boolean).slice(0,3).map(x=>"#"+x.replace(/[^\\p{L}\\p{N}]/gu,"")).join(" ");
+ const tags=[ "#"+clean, "#"+platform.toLowerCase(), topicTag, "#Conseils", "#Decouverte" ].filter(Boolean).join(" ");
+ const caption=brand+" — "+topic+".\\n\\n"+(voice==="Professionnel"?"Découvrez notre publication et les informations essentielles.":voice==="Éducatif"?"Voici une idée simple à comprendre et à appliquer.":voice==="Énergique et motivant"?"On passe à l'action ! Découvrez cette idée et dites-nous ce que vous en pensez.":voice==="Humoristique et respectueux"?"On apprend quelque chose aujourd'hui ? Découvrez cette idée et partagez votre avis.":"Un petit partage utile autour de "+niche+". Découvrez et dites-nous ce que vous en pensez !");
+ document.getElementById("contentOutput").textContent="BROUILLON — "+format+" / "+platform+"\\n\\n"+caption+"\\n\\nHASHTAGS À TESTER\\n"+tags+"\\n\\nSTRATÉGIE : gardez seulement les hashtags qui décrivent vraiment le contenu et le public. Mélangez quelques hashtags précis et généraux; comparez les résultats sur plusieurs publications. Aucun hashtag ne garantit la portée ou la viralité.\\n\\nSTATUT : BROUILLON NON PUBLIÉ. Relisez et approuvez avant de publier.";
 });
 document.getElementById("reviewBtn").addEventListener("click",()=>{
  const t=document.getElementById("reviewText").value.trim();if(!t){alert("Collez d'abord le document à vérifier.");return;}
