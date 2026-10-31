@@ -38,6 +38,11 @@ footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
   <button class="card" data-agent="content"><span class="icon">✍️</span><h3>Content Agent</h3><p>Rédige des idées, scripts, légendes et appels à l'action.</p></button>
   <button class="card" data-agent="ideas"><span class="icon">💡</span><h3>Business Ideas Agent</h3><p>Compare des idées selon le budget et les moyens disponibles.</p></button>
   <button class="card" data-agent="quality"><span class="icon">🛡️</span><h3>Quality Control Agent</h3><p>Contrôle les résultats, signale les erreurs et demande des corrections.</p></button>
+  <button class="card" data-agent="sales"><span class="icon">🤝</span><h3>Sales Agent</h3><p>Prépare une stratégie de vente éthique et suit le parcours client.</p></button>
+  <button class="card" data-agent="customer"><span class="icon">💬</span><h3>Customer Service Agent</h3><p>Prépare les réponses clients, FAQ et règles d'escalade.</p></button>
+  <button class="card" data-agent="operations"><span class="icon">⚙️</span><h3>Operations Agent</h3><p>Transforme les objectifs en tâches, étapes et contrôles.</p></button>
+  <button class="card" data-agent="automation"><span class="icon">🔄</span><h3>Automation Agent</h3><p>Conçoit des automatisations avec permissions et validations.</p></button>
+  <button class="card" data-agent="decision"><span class="icon">🧠</span><h3>Decision Analyst</h3><p>Compare les options, risques, scénarios et niveau de confiance.</p></button>
  </section>
  <section class="workspace">
   <span class="badge" id="agentBadge">AGENT MANAGER</span>
@@ -117,7 +122,12 @@ const info={
  marketing:["Stratégie marketing","Indiquez le produit, le public et l'objectif de votre campagne.","MARKETING AGENT"],
  finance:["Budget et finances","Saisissez les montants et les hypothèses. Vérifiez les chiffres avant toute décision.","FINANCE AGENT"],
  content:["Création de contenu","Décrivez le sujet, le ton et le public de votre publication.","CONTENT AGENT"],
- ideas:["Idées d'entreprise","Indiquez vos intérêts, vos compétences et les moyens dont vous disposez.","BUSINESS IDEAS AGENT"]
+ ideas:["Idées d'entreprise","Indiquez vos intérêts, vos compétences et les moyens dont vous disposez.","BUSINESS IDEAS AGENT"],
+ sales:["Stratégie de vente","Décrivez votre offre et vos clients pour construire un parcours de vente éthique.","SALES AGENT"],
+ customer:["Service client","Décrivez vos clients et les questions fréquentes pour préparer un système de support.","CUSTOMER SERVICE AGENT"],
+ operations:["Organisation des opérations","Décrivez votre objectif pour le transformer en étapes, responsables et contrôles.","OPERATIONS AGENT"],
+ automation:["Conception d'automatisation","Décrivez une tâche répétitive; l'agent précisera les déclencheurs, autorisations et validations.","AUTOMATION AGENT"],
+ decision:["Aide à la décision","Présentez les options et vos contraintes pour comparer les avantages, risques et scénarios.","DECISION ANALYST"]
 };
 const endpointInput=document.getElementById("apiEndpoint");
 const endpointStatus=document.getElementById("apiStatus");
