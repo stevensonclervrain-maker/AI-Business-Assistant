@@ -26,9 +26,10 @@ footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
  <p>Un espace de travail pour organiser vos agents, préparer vos décisions et contrôler la qualité des résultats.</p>
 </header>
 <main>
- <div class="notice"><b>Version de démarrage :</b> cette interface fonctionne déjà dans le navigateur. Les recommandations ci-dessous sont des aides guidées, pas encore des réponses produites par un véritable modèle IA. Pour connecter une IA, les comptes sociaux et la publication automatique, il faudra ensuite un serveur sécurisé et les autorisations officielles des plateformes.</div>
+ <div class="notice"><b>Version de démarrage :</b> cette interface fonctionne déjà dans le navigateur. Les recommandations ci-dessous sont des aides guidées, pas encore des réponses produites par un véritable modèle IA. Le moteur IA utilise Cloudflare Workers AI côté serveur. Les connexions aux comptes sociaux et la publication nécessitent encore les autorisations officielles des plateformes.</div>
  <section class="grid" id="agents">
   <button class="card active" data-agent="manager"><span class="icon">🧭</span><h3>AI Manager</h3><p>Organise les tâches et oriente la demande vers le bon agent.</p></button>
+  <button class="card" data-agent="team"><span class="icon">🤝</span><h3>Équipe complète</h3><p>Fait travailler recherche, business, marketing et finance, puis contrôle le résultat.</p></button>
   <button class="card" data-agent="social"><span class="icon">📱</span><h3>Social Media Agent</h3><p>Planifie les contenus TikTok, Instagram, Facebook et YouTube.</p></button>
   <button class="card" data-agent="research"><span class="icon">🔎</span><h3>Research Agent</h3><p>Structure une recherche, ses sources et les points à vérifier.</p></button>
   <button class="card" data-agent="business"><span class="icon">📊</span><h3>Business Analyst</h3><p>Étudie une idée, ses clients, ses coûts et ses risques.</p></button>
@@ -110,6 +111,7 @@ footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
 <script>
 const info={
  manager:["AI Manager","Décrivez votre objectif. Le Manager vous aidera à choisir une prochaine étape.","AGENT MANAGER"],
+ team:["Équipe complète","Plusieurs agents travaillent sur votre objectif, puis Quality Control vérifie et rassemble leurs résultats.","MULTI-AGENT TEAM"],
  research:["Recherche structurée","Précisez le sujet, la période et les décisions à prendre. Vérifiez toujours les sources originales.","RESEARCH AGENT"],
  business:["Analyse d'entreprise","Décrivez votre idée, vos clients et votre budget pour obtenir une grille d'analyse.","BUSINESS ANALYST"],
  marketing:["Stratégie marketing","Indiquez le produit, le public et l'objectif de votre campagne.","MARKETING AGENT"],
