@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>AI Business Assistant</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--panel2:#18263b;--line:#263750;--text:#edf4ff;--muted:#a8b7cc;--green:#37d39a;--blue:#73a7ff;--gold:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0b1220,#101d31);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+header{padding:26px 18px 18px;max-width:1100px;margin:auto}header .tag{color:var(--green);font-weight:700;font-size:12px;letter-spacing:1.5px}h1{font-size:clamp(27px,5vw,42px);margin:8px 0}header p{color:var(--muted);margin:0;line-height:1.5}
+main{max-width:1100px;margin:auto;padding:0 18px 40px}.notice{border:1px solid #66572c;background:#2a2518;color:#ffe5a1;padding:13px 15px;border-radius:12px;margin:10px 0 20px;font-size:14px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.card,.workspace{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px}.card{cursor:pointer;text-align:left;color:var(--text);transition:.2s}.card:hover,.card.active{border-color:var(--green);background:var(--panel2);transform:translateY(-1px)}.icon{font-size:25px}.card h3{margin:9px 0 5px;font-size:16px}.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+.workspace{margin-top:18px}.workspace h2{margin:0 0 6px}.sub{color:var(--muted);font-size:14px;margin:0 0 15px}
+label{display:block;font-size:13px;color:#cbd8e9;margin:12px 0 6px}input,select,textarea{width:100%;background:#0b1525;border:1px solid #30435e;border-radius:9px;color:var(--text);padding:12px;font:inherit}textarea{min-height:105px;resize:vertical}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+button.action{border:0;border-radius:9px;background:var(--green);color:#062319;font-weight:800;padding:12px 16px;margin-top:14px;cursor:pointer}button.secondary{background:#263a56;color:var(--text);margin-left:7px}
+.output{margin-top:16px;background:#0b1525;border:1px solid var(--line);border-radius:12px;padding:15px;min-height:70px;white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}.muted{color:var(--muted)}.small{font-size:12px;color:var(--muted);line-height:1.5}.hidden{display:none}.badge{display:inline-block;padding:4px 8px;border-radius:99px;background:#193a35;color:#8df0c9;font-size:11px;font-weight:700}
+footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+ <div class="tag">VOTRE ÉQUIPE D'AGENTS</div>
+ <h1>🤖 AI Business Assistant</h1>
+ <p>Un espace de travail pour organiser vos agents, préparer vos décisions et contrôler la qualité des résultats.</p>
+</header>
+<main>
+ <div class="notice"><b>Version de démarrage :</b> cette interface fonctionne déjà dans le navigateur. Les recommandations ci-dessous sont des aides guidées, pas encore des réponses produites par un véritable modèle IA. Pour connecter une IA, les comptes sociaux et la publication automatique, il faudra ensuite un serveur sécurisé et les autorisations officielles des plateformes.</div>
+ <section class="grid" id="agents">
+  <button class="card active" data-agent="manager"><span class="icon">🧭</span><h3>AI Manager</h3><p>Organise les tâches et oriente la demande vers le bon agent.</p></button>
+  <button class="card" data-agent="social"><span class="icon">📱</span><h3>Social Media Agent</h3><p>Planifie les contenus TikTok, Instagram, Facebook et YouTube.</p></button>
+  <button class="card" data-agent="research"><span class="icon">🔎</span><h3>Research Agent</h3><p>Structure une recherche, ses sources et les points à vérifier.</p></button>
+  <button class="card" data-agent="business"><span class="icon">📊</span><h3>Business Analyst</h3><p>Étudie une idée, ses clients, ses coûts et ses risques.</p></button>
+  <button class="card" data-agent="marketing"><span class="icon">📣</span><h3>Marketing Agent</h3><p>Prépare une stratégie et des messages promotionnels.</p></button>
+  <button class="card" data-agent="finance"><span class="icon">💰</span><h3>Finance Agent</h3><p>Organise un budget simple et vérifie les calculs fournis.</p></button>
+  <button class="card" data-agent="content"><span class="icon">✍️</span><h3>Content Agent</h3><p>Rédige des idées, scripts, légendes et appels à l'action.</p></button>
+  <button class="card" data-agent="ideas"><span class="icon">💡</span><h3>Business Ideas Agent</h3><p>Compare des idées selon le budget et les moyens disponibles.</p></button>
+  <button class="card" data-agent="quality"><span class="icon">🛡️</span><h3>Quality Control Agent</h3><p>Contrôle les résultats, signale les erreurs et demande des corrections.</p></button>
+ </section>
+ <section class="workspace">
+  <span class="badge" id="agentBadge">AGENT MANAGER</span>
+  <h2 id="workTitle">Que souhaitez-vous accomplir ?</h2>
+  <p class="sub" id="workDesc">Décrivez votre objectif. Le Manager vous aidera à choisir une prochaine étape.</p>
+  <div id="genericForm">
+   <label for="task">Votre demande</label>
+   <textarea id="task" placeholder="Exemple : je veux lancer une petite boutique en ligne..."></textarea>
+   <button class="action" id="runGeneric">Préparer le travail</button>
+   <div class="output" id="genericOutput">Votre résultat apparaîtra ici.</div>
+  </div>
+  <div id="socialForm" class="hidden">
+   <div class="row">
+    <div><label for="platform">Plateforme</label><select id="platform"><option>TikTok</option><option>Instagram</option><option>Facebook</option><option>YouTube</option></select></div>
+    <div><label for="goal">Objectif</label><select id="goal"><option>Développer mon audience</option><option>Vendre un produit ou service</option><option>Obtenir plus de commentaires</option><option>Faire connaître ma marque</option></select></div>
+    <div><label for="frequency">Rythme souhaité</label><select id="frequency"><option>3 publications par semaine</option><option>1 publication par jour</option><option>5 publications par semaine</option><option>2 publications par semaine</option></select></div>
+   </div>
+   <label for="niche">Sujet de votre compte / public visé</label><input id="niche" placeholder="Ex. football, beauté, cuisine, technologie...">
+   <label for="stats">Statistiques (facultatif : vues, likes, commentaires, heures actives)</label><textarea id="stats" placeholder="Ex. vidéo A : 1200 vues, 90 likes. Mon audience est surtout active le soir..."></textarea>
+   <button class="action" id="makePlan">Créer mon plan de contenu</button>
+   <div class="output" id="socialOutput">Le plan de contenu apparaîtra ici.</div>
+   <p class="small">Les heures proposées seront des hypothèses tant que vous n'aurez pas fourni vos statistiques d'audience. Aucune publication ne sera envoyée sans connexion officielle et votre approbation.</p>
+  </div>
+  <div id="qualityForm" class="hidden">
+   <label for="reviewText">Collez le travail d'un autre agent à vérifier</label><textarea id="reviewText" placeholder="Collez ici l'analyse, le budget, la recherche ou le contenu à contrôler..."></textarea>
+   <button class="action" id="reviewBtn">Vérifier le document</button>
+   <div class="output" id="qualityOutput">La liste de contrôle apparaîtra ici.</div>
+   <p class="small">Ce premier contrôle repère des points à vérifier et ne garantit pas que toutes les erreurs seront détectées. Une validation humaine reste nécessaire.</p>
+  </div>
+ </section>
+</main>
+<footer>AI Business Assistant • Prototype évolutif • Ne partagez jamais vos mots de passe ni vos clés API dans cette page.</footer>
+<script>
+const info={
+ manager:["AI Manager","Décrivez votre objectif. Le Manager vous aidera à choisir une prochaine étape.","AGENT MANAGER"],
+ research:["Recherche structurée","Précisez le sujet, la période et les décisions à prendre. Vérifiez toujours les sources originales.","RESEARCH AGENT"],
+ business:["Analyse d'entreprise","Décrivez votre idée, vos clients et votre budget pour obtenir une grille d'analyse.","BUSINESS ANALYST"],
+ marketing:["Stratégie marketing","Indiquez le produit, le public et l'objectif de votre campagne.","MARKETING AGENT"],
+ finance:["Budget et finances","Saisissez les montants et les hypothèses. Vérifiez les chiffres avant toute décision.","FINANCE AGENT"],
+ content:["Création de contenu","Décrivez le sujet, le ton et le public de votre publication.","CONTENT AGENT"],
+ ideas:["Idées d'entreprise","Indiquez vos intérêts, vos compétences et les moyens dont vous disposez.","BUSINESS IDEAS AGENT"]
+};
+const cards=[...document.querySelectorAll(".card")];
+const generic=document.getElementById("genericForm"),social=document.getElementById("socialForm"),quality=document.getElementById("qualityForm");
+let current="manager";
+function chooseAgent(id){
+ current=id;cards.forEach(c=>c.classList.toggle("active",c.dataset.agent===id));
+ generic.classList.toggle("hidden",id==="social"||id==="quality");
+ social.classList.toggle("hidden",id!=="social");quality.classList.toggle("hidden",id!=="quality");
+ const d=info[id]|| (id==="social"?["Planification des réseaux sociaux","Préparez des idées de contenu à partir de votre audience et de vos statistiques.","SOCIAL MEDIA AGENT"]:["Contrôle qualité","Vérifiez le travail des autres agents avant de l'utiliser.","QUALITY CONTROL AGENT"]);
+ document.getElementById("workTitle").textContent=d[0];document.getElementById("workDesc").textContent=d[1];document.getElementById("agentBadge").textContent=d[2];
+}
+cards.forEach(c=>c.addEventListener("click",()=>chooseAgent(c.dataset.agent)));
+document.getElementById("runGeneric").addEventListener("click",()=>{
+ const t=document.getElementById("task").value.trim();if(!t){alert("Décrivez d'abord votre demande.");return;}
+ const prompts={
+ manager:"MANAGER — Objectif reçu : "+t+"\n\nÉtapes proposées :\n1. Clarifier le résultat attendu et les contraintes.\n2. Confier la recherche à Research Agent.\n3. Demander l'analyse à Business Analyst ou Finance Agent selon le besoin.\n4. Faire préparer le plan par Marketing ou Content Agent.\n5. Envoyer tous les résultats à Quality Control Agent.\n6. Faire valider le résultat final par vous.",
+ research:"RECHERCHE — Sujet : "+t+"\n\nÀ faire : formuler 3 questions précises; rechercher des sources primaires et récentes; noter la date de chaque source; comparer au moins deux sources indépendantes; séparer les faits confirmés des hypothèses; signaler ce qui reste inconnu.",
+ business:"ANALYSE BUSINESS — Projet : "+t+"\n\nGrille : problème client; public cible; solution; concurrents; coûts de départ; prix; canaux de vente; risques; test à petite échelle; indicateurs de réussite. Les chiffres doivent être confirmés avant décision.",
+ marketing:"MARKETING — Demande : "+t+"\n\nPlan : public cible; promesse principale; preuve; offre; canal; calendrier; appel à l'action; indicateurs (portée, clics, demandes, ventes). Tester plusieurs versions et comparer les résultats.",
+ finance:"FINANCE — Demande : "+t+"\n\nSéparer coûts fixes et variables; préciser revenus attendus; calculer marge et trésorerie; indiquer devise et période; tester un scénario prudent. Ne pas inventer les montants manquants.",
+ content:"CONTENU — Brief : "+t+"\n\nPréparer : une accroche claire; une idée principale; un script court; une légende; un appel à l'action; une variante. Vérifier les faits, les droits sur les médias et l'adaptation à la plateforme.",
+ ideas:"IDÉES — Demande : "+t+"\n\nComparer les pistes selon : demande réelle; budget; compétences; difficulté; marge possible; concurrence; risque; test peu coûteux. Ne pas promettre de bénéfice garanti."
+ };
+ document.getElementById("genericOutput").textContent=prompts[current]||prompts.manager;
+});
+document.getElementById("makePlan").addEventListener("click",()=>{
+ const p=document.getElementById("platform").value,g=document.getElementById("goal").value,f=document.getElementById("frequency").value,n=document.getElementById("niche").value.trim()||"votre thème",s=document.getElementById("stats").value.trim();
+ let out="PLAN SOCIAL MEDIA — "+p+"\nSujet : "+n+"\nObjectif : "+g+"\nRythme : "+f+"\n\nCALENDRIER DE DÉPART (à tester)\n";
+ out+="• Publication 1 : conseil ou astuce utile sur "+n+".\n• Publication 2 : démonstration, histoire ou exemple concret.\n• Publication 3 : question, sondage ou réponse à une question fréquente.\n\n";
+ out+="HORAIRES : consultez les statistiques « audience / heures les plus actives » de votre compte. Testez 2 ou 3 créneaux pendant plusieurs semaines; comparez les résultats. Sans ces données, aucun horaire précis ne peut être garanti.\n\n";
+ out+="MESURES À SUIVRE : vues/portée, durée de visionnage, taux de complétion, partages, commentaires, visites du profil et clics. Comparez les publications du même format.";
+ if(s)out+="\n\nSTATISTIQUES FOURNIES :\n"+s+"\n\nÀ analyser : repérer les formats et créneaux qui obtiennent les meilleurs résultats, en tenant compte du nombre de publications et de la taille de l'audience.";
+ out+="\n\nPROCHAINE ÉTAPE : créez 3 contenus, faites-les approuver, publiez-les manuellement, puis revenez avec les statistiques pour améliorer le plan.";
+ document.getElementById("socialOutput").textContent=out;
+});
+document.getElementById("reviewBtn").addEventListener("click",()=>{
+ const t=document.getElementById("reviewText").value.trim();if(!t){alert("Collez d'abord le document à vérifier.");return;}
+ const checks=["Les affirmations importantes ont-elles une source vérifiable ?","Les dates, noms, unités et devises sont-ils cohérents ?","Les calculs montrent-ils leurs formules et hypothèses ?","Les faits sont-ils séparés des estimations et opinions ?","Les informations manquantes sont-elles signalées ?","Le résultat répond-il exactement à la demande ?","Y a-t-il des contradictions ou des promesses trop certaines ?","Les données personnelles et secrets sont-ils protégés ?"];
+ const hits=[];if(/\b(100%|garanti|toujours|jamais|certainement)\b/i.test(t))hits.push("Attention : formulation absolue détectée. Vérifier qu'elle est justifiée.");if(!/https?:\/\//i.test(t))hits.push("Aucun lien de source visible : ajouter les références si le document contient des faits externes.");if(/\$|gdes|htg|usd|eur/i.test(t)&&!/(total|budget|coût|cout|prix)/i.test(t))hits.push("Des montants apparaissent : vérifier devise, période et calculs.");
+ document.getElementById("qualityOutput").textContent="RAPPORT DE CONTRÔLE PRÉLIMINAIRE\n\nPoints à vérifier :\n"+checks.map((x,i)=>(i+1)+". ☐ "+x).join("\n")+"\n\nAlertes automatiques :\n"+(hits.length?hits.map(x=>"• "+x).join("\n"):"• Aucune alerte simple détectée; cela ne prouve pas que le document est exact.")+"\n\nDÉCISION : EN ATTENTE DE VALIDATION HUMAINE. Corriger les points non vérifiés, puis soumettre à nouveau.";
+});
+</script>
+</body></html>
