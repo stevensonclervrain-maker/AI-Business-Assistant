@@ -1,42 +1,44 @@
 # AI Business Assistant
 
-Prototype d'une équipe d'agents pour organiser le travail d'une petite entreprise.
+Équipe multi-agents pour aider à analyser, planifier et préparer des décisions d'entreprise.
 
-## État actuel
+## Agents disponibles
 
-- `index.html` : interface web statique avec les agents et des outils locaux de préparation/analyse.
-- `worker.js` : point de départ d'un backend sécurisé qui transmet les demandes au modèle IA côté serveur.
-- `wrangler.toml` : configuration de départ pour Cloudflare Workers.
+- AI Manager : coordonne les demandes et synthétise les décisions.
+- Équipe complète : fait travailler Research, Business, Finance, Marketing, Sales et Operations en parallèle, puis lance un audit indépendant et une synthèse finale.
+- Social Media, Research, Business, Marketing, Finance, Content et Business Ideas.
+- Quality Control : cherche les erreurs, hypothèses fragiles et risques.
+- Sales, Customer Service, Operations, Automation et Decision Analyst.
 
-**Important :** le backend n'est pas encore déployé et l'interface n'est pas encore connectée à lui. Les fonctions visibles dans la page restent donc des outils de prototype; elles ne sont pas encore des agents IA autonomes.
+## Qualité des décisions
 
-## Architecture prévue
+Les agents doivent distinguer les faits, hypothèses, estimations et informations inconnues; signaler les données manquantes; montrer les risques et compromis; proposer plusieurs options et un prochain test mesurable. Le contrôle qualité doit pouvoir contester les autres agents. Les décisions importantes restent à valider par l'utilisateur.
 
-GitHub Pages (interface) → Cloudflare Worker (backend) → API du fournisseur IA.
+## Architecture
 
-La clé API doit rester dans un secret du serveur. Ne jamais la mettre dans `index.html`, dans le navigateur, ni dans un commit GitHub.
+GitHub Pages (interface) → Cloudflare Worker (backend) → Cloudflare Workers AI (modèle côté serveur).
 
-## Configuration du backend (à faire avec un adulte responsable)
+Le Worker utilise le binding Cloudflare Workers AI nommé `AI`. Aucun secret d'API ne doit être placé dans `index.html`, dans le navigateur ou dans GitHub.
 
-L'utilisation d'une API IA peut entraîner des frais selon le fournisseur et l'usage. Avant d'activer un service payant, demandez à un parent/tuteur de vérifier les conditions d'âge, le compte et les coûts.
+## Configuration
 
-1. Déployer ce Worker sur un compte Cloudflare autorisé.
-2. Définir les variables/ secrets côté serveur : `OPENAI_API_KEY` (secret), `OPENAI_MODEL` et `ALLOWED_ORIGIN`.
-3. Garder `ALLOWED_ORIGIN` limité à l'origine GitHub Pages indiquée dans `wrangler.toml`.
-4. Tester le endpoint avant de connecter l'interface.
-5. Ajouter une limitation de débit et une protection anti-abus avant toute utilisation publique.
+1. Déployer le Worker `worker.js` sur Cloudflare.
+2. Vérifier que le binding Workers AI porte exactement le nom `AI`.
+3. Configurer `ALLOWED_ORIGIN` avec l'origine exacte du site GitHub Pages.
+4. Copier l'adresse HTTPS du Worker dans le champ « Adresse du backend » de l'application et enregistrer.
+5. Tester un agent individuel, puis « Équipe complète ».
 
-Le Worker accepte un POST JSON de la forme :
+Le Worker accepte un POST JSON :
 
 ```json
-{ "agent": "social", "prompt": "Analyse ce résumé de statistiques..." }
+{ "agent": "team", "prompt": "Évalue cette idée de petite entreprise..." }
 ```
 
-Les agents pris en charge sont : `manager`, `social`, `research`, `business`, `marketing`, `finance`, `content`, `ideas` et `quality`.
+## Limites et précautions
 
-## Limites actuelles
-
+- Les agents ne naviguent pas automatiquement sur Internet et ne vérifient pas les actualités en direct. Ils ne doivent jamais inventer de sources.
 - Aucun compte TikTok, Instagram, Facebook ou YouTube n'est connecté.
-- Aucune publication ni programmation automatique n'est activée.
-- L'analyse sociale utilise uniquement les statistiques saisies par l'utilisateur.
-- La connexion au backend IA reste à réaliser et à tester.
+- Aucune publication, programmation ou action externe n'est exécutée automatiquement.
+- Les recommandations financières sont des analyses indicatives, pas une garantie de bénéfice.
+- L'équipe complète effectue plusieurs appels au modèle; surveiller les quotas et limites du compte Cloudflare.
+- Avant toute utilisation réelle, tester les résultats et garder une validation humaine pour les décisions et publications importantes.
