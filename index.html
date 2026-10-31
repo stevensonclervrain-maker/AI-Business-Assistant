@@ -42,6 +42,15 @@ footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
   <span class="badge" id="agentBadge">AGENT MANAGER</span>
   <h2 id="workTitle">Que souhaitez-vous accomplir ?</h2>
   <p class="sub" id="workDesc">Décrivez votre objectif. Le Manager vous aidera à choisir une prochaine étape.</p>
+  <div class="card" style="cursor:default;margin:12px 0">
+   <b>🔌 Connexion au moteur IA (backend)</b>
+   <p class="small">Après le déploiement du Worker, collez ici son adresse publique. Cette adresse n'est pas une clé secrète.</p>
+   <label for="apiEndpoint">Adresse du backend</label>
+   <input id="apiEndpoint" type="url" placeholder="https://votre-worker.workers.dev">
+   <button class="action secondary" id="saveEndpoint" type="button">Enregistrer l'adresse</button>
+   <span class="small" id="apiStatus" role="status">Backend non configuré.</span>
+   <button class="action" id="askAI" type="button">✨ Demander une réponse au véritable agent IA</button>
+  </div>
   <div id="genericForm">
    <label for="task">Votre demande</label>
    <textarea id="task" placeholder="Exemple : je veux lancer une petite boutique en ligne..."></textarea>
@@ -108,6 +117,54 @@ const info={
  content:["Création de contenu","Décrivez le sujet, le ton et le public de votre publication.","CONTENT AGENT"],
  ideas:["Idées d'entreprise","Indiquez vos intérêts, vos compétences et les moyens dont vous disposez.","BUSINESS IDEAS AGENT"]
 };
+const endpointInput=document.getElementById("apiEndpoint");
+const endpointStatus=document.getElementById("apiStatus");
+const savedEndpoint=localStorage.getItem("aiBusinessAssistantEndpoint")||"";
+endpointInput.value=savedEndpoint;
+endpointStatus.textContent=savedEndpoint?"Adresse enregistrée. Le backend doit être déployé pour fonctionner.":"Backend non configuré.";
+document.getElementById("saveEndpoint").addEventListener("click",()=>{
+ const value=endpointInput.value.trim().replace(/\/$/,"");
+ if(value && !/^https:\/\//i.test(value)){alert("Utilisez une adresse HTTPS.");return;}
+ if(value)localStorage.setItem("aiBusinessAssistantEndpoint",value);
+ else localStorage.removeItem("aiBusinessAssistantEndpoint");
+ endpointStatus.textContent=value?"Adresse enregistrée sur cet appareil.":"Adresse effacée.";
+});
+function getAgentPrompt(){
+ if(current==="social"){
+  return "Plateforme : "+document.getElementById("platform").value+
+   "\nObjectif : "+document.getElementById("goal").value+
+   "\nSujet du compte : "+document.getElementById("niche").value+
+   "\nMarque : "+document.getElementById("brand").value+
+   "\nFormat : "+document.getElementById("format").value+
+   "\nSujet du contenu : "+document.getElementById("topic").value+
+   "\nTon : "+document.getElementById("voice").value+
+   "\nStatistiques fournies : "+document.getElementById("stats").value+
+   "\nPrépare une analyse et des recommandations concrètes, puis propose un brouillon adapté.";
+ }
+ if(current==="quality")return "Vérifie ce document :\n"+document.getElementById("reviewText").value;
+ return document.getElementById("task").value.trim();
+}
+document.getElementById("askAI").addEventListener("click",async()=>{
+ const endpoint=(localStorage.getItem("aiBusinessAssistantEndpoint")||"").trim();
+ const prompt=getAgentPrompt();
+ if(!endpoint){alert("Enregistre d'abord l'adresse de ton backend. Le Worker n'est pas encore déployé.");return;}
+ if(!prompt){alert("Remplis d'abord le formulaire de l'agent.");return;}
+ const button=document.getElementById("askAI");
+ button.disabled=true;button.textContent="⏳ L'agent travaille...";
+ endpointStatus.textContent="Connexion au backend...";
+ try{
+  const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({agent:current,prompt})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Erreur du backend.");
+  const target=current==="social"?"contentOutput":current==="quality"?"qualityOutput":"genericOutput";
+  document.getElementById(target).textContent=data.answer;
+  endpointStatus.textContent="Réponse reçue du backend IA.";
+ }catch(error){
+  endpointStatus.textContent="Connexion impossible : "+error.message;
+ }finally{
+  button.disabled=false;button.textContent="✨ Demander une réponse au véritable agent IA";
+ }
+});
 const cards=[...document.querySelectorAll(".card")];
 const generic=document.getElementById("genericForm"),social=document.getElementById("socialForm"),quality=document.getElementById("qualityForm");
 let current="manager";
