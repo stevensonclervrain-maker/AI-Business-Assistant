@@ -63,7 +63,7 @@ export default {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: env.OPENAI_MODEL || "gpt-5.5",
+          model: env.OPENAI_MODEL || "gpt-6-luna",
           instructions: agentInstructions[agent],
           input: prompt,
           max_output_tokens: 900
