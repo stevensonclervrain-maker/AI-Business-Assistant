@@ -43,6 +43,13 @@ footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
   <button class="card" data-agent="operations"><span class="icon">⚙️</span><h3>Operations Agent</h3><p>Transforme les objectifs en tâches, étapes et contrôles.</p></button>
   <button class="card" data-agent="automation"><span class="icon">🔄</span><h3>Automation Agent</h3><p>Conçoit des automatisations avec permissions et validations.</p></button>
   <button class="card" data-agent="decision"><span class="icon">🧠</span><h3>Decision Analyst</h3><p>Compare les options, risques, scénarios et niveau de confiance.</p></button>
+  <button class="card" data-agent="affiliate"><span class="icon">🔗</span><h3>Affiliate Marketing Agent</h3><p>Choisit une niche, évalue les offres et prépare une stratégie d’affiliation transparente.</p></button>
+  <button class="card" data-agent="saas"><span class="icon">🧩</span><h3>SaaS Business Agent</h3><p>Valide une idée SaaS, son public, son prix et sa stratégie de rétention.</p></button>
+  <button class="card" data-agent="shopify"><span class="icon">🛍️</span><h3>Shopify Store Agent</h3><p>Prépare la boutique, les fiches produits, la livraison et le lancement.</p></button>
+  <button class="card" data-agent="ecommerce"><span class="icon">🛒</span><h3>E-commerce Agent</h3><p>Améliore l’expérience client, les pages produits et le parcours d’achat.</p></button>
+  <button class="card" data-agent="funnel"><span class="icon">🎯</span><h3>Sales Funnel Agent</h3><p>Construit un parcours de conversion avec étapes et indicateurs.</p></button>
+  <button class="card" data-agent="growth"><span class="icon">📈</span><h3>Growth Marketing Agent</h3><p>Priorise des expériences marketing mesurables et peu coûteuses.</p></button>
+  <button class="card" data-agent="competitor"><span class="icon">🔍</span><h3>Competitor Analysis Agent</h3><p>Prépare une comparaison structurée des concurrents.</p></button>
  </section>
  <section class="workspace">
   <span class="badge" id="agentBadge">AGENT MANAGER</span>
@@ -127,7 +134,14 @@ const info={
  customer:["Service client","Décrivez vos clients et les questions fréquentes pour préparer un système de support.","CUSTOMER SERVICE AGENT"],
  operations:["Organisation des opérations","Décrivez votre objectif pour le transformer en étapes, responsables et contrôles.","OPERATIONS AGENT"],
  automation:["Conception d'automatisation","Décrivez une tâche répétitive; l'agent précisera les déclencheurs, autorisations et validations.","AUTOMATION AGENT"],
- decision:["Aide à la décision","Présentez les options et vos contraintes pour comparer les avantages, risques et scénarios.","DECISION ANALYST"]
+ decision:["Aide à la décision","Présentez les options et vos contraintes pour comparer les avantages, risques et scénarios.","DECISION ANALYST"],
+ affiliate:["Marketing d’affiliation","Décrivez votre niche, votre public et les produits à promouvoir.","AFFILIATE MARKETING AGENT"],
+ saas:["Stratégie SaaS","Décrivez le problème que votre logiciel résout et les clients visés.","SAAS BUSINESS AGENT"],
+ shopify:["Boutique Shopify","Décrivez vos produits, votre marché et les besoins de votre boutique.","SHOPIFY STORE AGENT"],
+ ecommerce:["Croissance e-commerce","Décrivez votre boutique et les données disponibles sur les visiteurs et ventes.","E-COMMERCE AGENT"],
+ funnel:["Tunnel de conversion","Décrivez votre offre et le parcours actuel de vos clients.","SALES FUNNEL AGENT"],
+ growth:["Growth marketing","Décrivez votre objectif, votre audience et votre budget éventuel.","GROWTH MARKETING AGENT"],
+ competitor:["Analyse concurrentielle","Indiquez votre marché et les concurrents à comparer.","COMPETITOR ANALYSIS AGENT"]
 };
 const endpointInput=document.getElementById("apiEndpoint");
 const endpointStatus=document.getElementById("apiStatus");
@@ -177,7 +191,7 @@ document.getElementById("askAI").addEventListener("click",async()=>{
   button.disabled=false;button.textContent="✨ Demander une réponse au véritable agent IA";
  }
 });
-const cards=[...document.querySelectorAll(".card")];
+const cards=[...document.querySelectorAll(".card[data-agent]")];
 const generic=document.getElementById("genericForm"),social=document.getElementById("socialForm"),quality=document.getElementById("qualityForm");
 let current="manager";
 function chooseAgent(id){
