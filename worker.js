@@ -1,6 +1,6 @@
 const corsHeaders = (origin) => ({
   "Access-Control-Allow-Origin": origin,
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Vary": "Origin"
 });
@@ -31,6 +31,20 @@ const agentInstructions = {
 
 const MODEL = "@cf/meta/llama-3.1-8b-instruct";
 const MAX_PROMPT = 5000;
+
+const connectorCatalog = [
+  { id: "google-sheets", name: "Google Sheets", category: "Business", description: "Lire et organiser des tableaux et indicateurs." },
+  { id: "gmail", name: "Gmail", category: "Communication", description: "Préparer et gérer les échanges e-mail." },
+  { id: "telegram", name: "Telegram Bot", category: "Communication", description: "Automatiser des notifications et réponses via un bot." },
+  { id: "shopify", name: "Shopify", category: "E-commerce", description: "Consulter les produits, commandes et données de boutique." },
+  { id: "github", name: "GitHub", category: "Development", description: "Consulter dépôts, fichiers et activités de développement." },
+  { id: "firecrawl", name: "Firecrawl", category: "Research", description: "Rechercher et extraire des informations de pages web publiques." },
+  { id: "n8n", name: "n8n", category: "Automation", description: "Orchestrer des workflows entre services." },
+  { id: "google-drive", name: "Google Drive", category: "Productivity", description: "Rechercher et consulter des fichiers autorisés." },
+  { id: "notion", name: "Notion", category: "Productivity", description: "Consulter et organiser des espaces de travail." },
+  { id: "meta", name: "Meta Business", category: "Social Media", description: "Accéder aux données autorisées des pages et comptes professionnels." },
+  { id: "youtube", name: "YouTube", category: "Social Media", description: "Consulter les données autorisées de chaîne et vidéos." }
+];
 
 function json(data, status, headers) {
   return new Response(JSON.stringify(data), {
@@ -87,7 +101,14 @@ export default {
     }
     if (origin !== allowedOrigin) return json({ error: "Origin not allowed." }, 403, {});
     const headers = corsHeaders(allowedOrigin);
-    if (request.method !== "POST") return json({ error: "Use POST." }, 405, headers);
+    const url = new URL(request.url);
+    if (request.method === "GET" && url.pathname.endsWith("/connectors")) {
+      return json({
+        connectors: connectorCatalog.map(item => ({ ...item, status: "not_connected" })),
+        note: "Catalogue uniquement : OAuth/API connectors are not enabled yet."
+      }, 200, headers);
+    }
+    if (request.method !== "POST") return json({ error: "Use GET /connectors or POST /." }, 405, headers);
     if (!env.AI) return json({ error: "Cloudflare Workers AI binding is missing. Add the AI binding named AI in Worker settings, then redeploy." }, 503, headers);
 
     try {
