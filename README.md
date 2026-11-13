@@ -42,3 +42,17 @@ Le Worker accepte un POST JSON :
 - Les recommandations financières sont des analyses indicatives, pas une garantie de bénéfice.
 - L'équipe complète effectue plusieurs appels au modèle; surveiller les quotas et limites du compte Cloudflare.
 - Avant toute utilisation réelle, tester les résultats et garder une validation humaine pour les décisions et publications importantes.
+
+
+## Connectors Hub (foundation)
+
+The central Connectors Hub currently exposes a catalogue endpoint at `GET /connectors`. It lists planned services and explicitly marks every service as not connected. This is a catalogue and status foundation, not a live OAuth integration.
+
+### Security and rollout
+
+- Add one provider at a time using its official OAuth/API flow and minimum required scopes.
+- Keep client secrets and access/refresh tokens in Cloudflare Worker secrets or a dedicated encrypted store; never put them in GitHub Pages, browser localStorage, source code, or chat.
+- Start with read-only scopes and test accounts where possible.
+- Require explicit user approval before sending messages, publishing content, changing records, deleting data, or spending money.
+- Record provider, granted scopes, token expiry, connection state, errors, and revocation state without logging tokens.
+- The first implementation adds a visible catalogue and a read-only status endpoint only. No provider account is connected and no external action is available yet.
