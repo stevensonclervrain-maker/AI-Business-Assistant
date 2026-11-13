@@ -161,7 +161,7 @@ const info={
 };
 
 async function loadConnectors(){
- const endpoint=(localStorage.getItem("aiBusinessAssistantEndpoint")||"").trim().replace(/\\/$/,"");
+ const endpoint=(localStorage.getItem("aiBusinessAssistantEndpoint")||"").trim().replace(/\/$/,"");
  const status=document.getElementById("connectorStatus");
  const list=document.getElementById("connectorList");
  if(!endpoint){status.textContent="Enregistre d'abord l'adresse du Worker.";list.innerHTML='<div class="connector-card"><h3>Backend requis</h3><p>Le catalogue sera chargé lorsque l’adresse du Worker sera enregistrée.</p></div>';return;}
@@ -175,17 +175,20 @@ async function loadConnectors(){
  }catch(error){status.textContent="Impossible de charger le catalogue : "+error.message;}
 }
 document.getElementById("refreshConnectors").addEventListener("click",loadConnectors);
-\nconst endpointInput=document.getElementById("apiEndpoint");
+
+const endpointInput=document.getElementById("apiEndpoint");
 const endpointStatus=document.getElementById("apiStatus");
 const savedEndpoint=localStorage.getItem("aiBusinessAssistantEndpoint")||"";
 endpointInput.value=savedEndpoint;
-endpointStatus.textContent=savedEndpoint?"Adresse enregistrée. Le backend doit être déployé pour fonctionner.":"Backend non configuré.";\nloadConnectors();
+endpointStatus.textContent=savedEndpoint?"Adresse enregistrée. Le backend doit être déployé pour fonctionner.":"Backend non configuré.";
+loadConnectors();
 document.getElementById("saveEndpoint").addEventListener("click",()=>{
  const value=endpointInput.value.trim().replace(/\/$/,"");
  if(value && !/^https:\/\//i.test(value)){alert("Utilisez une adresse HTTPS.");return;}
  if(value)localStorage.setItem("aiBusinessAssistantEndpoint",value);
  else localStorage.removeItem("aiBusinessAssistantEndpoint");
- endpointStatus.textContent=value?"Adresse enregistrée sur cet appareil.":"Adresse effacée.";\n loadConnectors();
+ endpointStatus.textContent=value?"Adresse enregistrée sur cet appareil.":"Adresse effacée.";
+ loadConnectors();
 });
 function getAgentPrompt(){
  if(current==="social"){
