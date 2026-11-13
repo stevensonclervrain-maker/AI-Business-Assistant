@@ -17,6 +17,8 @@ label{display:block;font-size:13px;color:#cbd8e9;margin:12px 0 6px}input,select,
 button.action{border:0;border-radius:9px;background:var(--green);color:#062319;font-weight:800;padding:12px 16px;margin-top:14px;cursor:pointer}button.secondary{background:#263a56;color:var(--text);margin-left:7px}
 .output{margin-top:16px;background:#0b1525;border:1px solid var(--line);border-radius:12px;padding:15px;min-height:70px;white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}.muted{color:var(--muted)}.small{font-size:12px;color:var(--muted);line-height:1.5}.hidden{display:none}.badge{display:inline-block;padding:4px 8px;border-radius:99px;background:#193a35;color:#8df0c9;font-size:11px;font-weight:700}
 footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-size:12px}
+
+.connector-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}.connector-card{background:#0b1525;border:1px solid var(--line);border-radius:12px;padding:13px}.connector-card h3{margin:0 0 5px;font-size:15px}.connector-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.connector-state{display:inline-block;margin-top:9px;padding:4px 8px;border-radius:20px;background:#3b3320;color:#ffe5a1;font-size:11px;font-weight:700}
 </style>
 </head>
 <body>
@@ -50,6 +52,20 @@ footer{max-width:1100px;margin:auto;padding:0 18px 30px;color:var(--muted);font-
   <button class="card" data-agent="funnel"><span class="icon">🎯</span><h3>Sales Funnel Agent</h3><p>Construit un parcours de conversion avec étapes et indicateurs.</p></button>
   <button class="card" data-agent="growth"><span class="icon">📈</span><h3>Growth Marketing Agent</h3><p>Priorise des expériences marketing mesurables et peu coûteuses.</p></button>
   <button class="card" data-agent="competitor"><span class="icon">🔍</span><h3>Competitor Analysis Agent</h3><p>Prépare une comparaison structurée des concurrents.</p></button>
+ </section>
+ 
+ <section class="workspace" id="connectorsHub">
+  <span class="badge">CONNECTORS HUB</span>
+  <h2>Centre de connexions</h2>
+  <p class="sub">Catalogue central des services que les agents pourront utiliser. Les intégrations sont affichées comme non connectées jusqu'à la mise en place de leur authentification officielle.</p>
+  <div class="connector-toolbar">
+   <button class="action" id="refreshConnectors" type="button">Actualiser les connexions</button>
+   <span class="small" id="connectorStatus" role="status">Catalogue en attente de chargement.</span>
+  </div>
+  <div class="grid" id="connectorList">
+   <div class="connector-card"><h3>Chargement…</h3><p>Récupération du catalogue.</p></div>
+  </div>
+  <p class="small">Sécurité : ne collez jamais de mot de passe, jeton ou clé API ici. Les connexions réelles utiliseront OAuth officiel ou des secrets stockés côté Cloudflare Worker. Les actions d'envoi, publication, modification et paiement devront demander votre approbation.</p>
  </section>
  <section class="workspace">
   <span class="badge" id="agentBadge">AGENT MANAGER</span>
@@ -143,17 +159,33 @@ const info={
  growth:["Growth marketing","Décrivez votre objectif, votre audience et votre budget éventuel.","GROWTH MARKETING AGENT"],
  competitor:["Analyse concurrentielle","Indiquez votre marché et les concurrents à comparer.","COMPETITOR ANALYSIS AGENT"]
 };
-const endpointInput=document.getElementById("apiEndpoint");
+
+async function loadConnectors(){
+ const endpoint=(localStorage.getItem("aiBusinessAssistantEndpoint")||"").trim().replace(/\\/$/,"");
+ const status=document.getElementById("connectorStatus");
+ const list=document.getElementById("connectorList");
+ if(!endpoint){status.textContent="Enregistre d'abord l'adresse du Worker.";list.innerHTML='<div class="connector-card"><h3>Backend requis</h3><p>Le catalogue sera chargé lorsque l’adresse du Worker sera enregistrée.</p></div>';return;}
+ status.textContent="Chargement du catalogue…";
+ try{
+  const response=await fetch(endpoint+"/connectors",{method:"GET"});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Erreur du backend");
+  list.innerHTML=data.connectors.map(c=>'<article class="connector-card"><h3>'+c.name+'</h3><p>'+c.description+'</p><span class="connector-state">'+(c.status==="connected"?"Connecté":"Non connecté")+'</span></article>').join("");
+  status.textContent=data.connectors.length+" services dans le catalogue. Aucune intégration OAuth n'est encore activée.";
+ }catch(error){status.textContent="Impossible de charger le catalogue : "+error.message;}
+}
+document.getElementById("refreshConnectors").addEventListener("click",loadConnectors);
+\nconst endpointInput=document.getElementById("apiEndpoint");
 const endpointStatus=document.getElementById("apiStatus");
 const savedEndpoint=localStorage.getItem("aiBusinessAssistantEndpoint")||"";
 endpointInput.value=savedEndpoint;
-endpointStatus.textContent=savedEndpoint?"Adresse enregistrée. Le backend doit être déployé pour fonctionner.":"Backend non configuré.";
+endpointStatus.textContent=savedEndpoint?"Adresse enregistrée. Le backend doit être déployé pour fonctionner.":"Backend non configuré.";\nloadConnectors();
 document.getElementById("saveEndpoint").addEventListener("click",()=>{
  const value=endpointInput.value.trim().replace(/\/$/,"");
  if(value && !/^https:\/\//i.test(value)){alert("Utilisez une adresse HTTPS.");return;}
  if(value)localStorage.setItem("aiBusinessAssistantEndpoint",value);
  else localStorage.removeItem("aiBusinessAssistantEndpoint");
- endpointStatus.textContent=value?"Adresse enregistrée sur cet appareil.":"Adresse effacée.";
+ endpointStatus.textContent=value?"Adresse enregistrée sur cet appareil.":"Adresse effacée.";\n loadConnectors();
 });
 function getAgentPrompt(){
  if(current==="social"){
